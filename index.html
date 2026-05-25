@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="app-id" content="ca-app-pub-2582802088491132~5061731931">
+    <title>Z-Tasks & Wallet | Nazar Softwares</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root { --accent: #a855f7; --bg: #020617; }
+        body { 
+            background: var(--bg); color: white; font-family: 'Segoe UI', sans-serif; 
+            height: 100vh; overflow: hidden; margin: 0;
+        }
+        .glass { background: rgba(255, 255, 255, 0.02); backdrop-filter: blur(20px); border: 1px solid rgba(255, 255, 255, 0.08); transition: 0.3s; }
+        .glass:hover { border-color: rgba(168, 85, 247, 0.3); }
+        
+        /* Main Layout - Adjusts for Tablet/PC */
+        .app-wrapper {
+            width: 100%; max-width: 1000px; height: 100vh; margin: 0 auto;
+            display: flex; flex-direction: column; position: relative;
+        }
+
+        .content-area {
+            flex: 1; overflow-y: auto; scrollbar-width: none; padding: 20px;
+            display: grid; grid-template-columns: 1fr; gap: 20px; padding-bottom: 100px;
+        }
+        
+        /* Responsive Grid for Tablets & PC */
+        @media (min-width: 768px) {
+            .content-area { grid-template-columns: 1fr 1fr; align-content: start; }
+            .full-width { grid-column: span 2; }
+        }
+
+        .bottom-nav { 
+            background: rgba(15, 23, 42, 0.95); backdrop-filter: blur(15px);
+            border-top: 1px solid rgba(168, 85, 247, 0.2);
+            position: absolute; bottom: 0; width: 100%; max-width: 1000px;
+        }
+
+        .btn-grad { background: linear-gradient(135deg, #9333ea 0%, #4f46e5 100%); box-shadow: 0 4px 15px rgba(147, 51, 234, 0.2); }
+        .nav-item.active { color: var(--accent); }
+        .ad-banner { background: repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(255,255,255,0.02) 10px, rgba(255,255,255,0.02) 20px); border: 1px dashed rgba(255,255,255,0.1); }
+    </style>
+</head>
+<body>
+
+    <div class="app-wrapper">
+        <header class="p-6 flex justify-between items-center shrink-0">
+            <div>
+                <h1 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-500 tracking-tighter">NAZAR SOFTWARES</h1>
+                <p id="mLabel" class="text-[10px] text-gray-500 uppercase font-bold tracking-[3px]"></p>
+            </div>
+            <div id="clock" class="glass px-4 py-2 rounded-2xl text-purple-400 font-mono text-sm border-purple-500/20">00:00</div>
+        </header>
+
+        <div class="px-6 mb-2 shrink-0">
+            <div class="ad-banner h-14 rounded-xl flex items-center justify-center text-[10px] text-gray-700 font-bold" id="admob-banner">BANNER AD UNIT</div>
+        </div>
+
+        <main class="content-area" id="mainScroll">
+            
+            <div id="addPage" class="full-width grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="glass p-6 rounded-[2.5rem] flex flex-col justify-center items-center md:col-span-2 border-b-4 border-purple-600/30">
+                    <p class="text-xs text-gray-500 uppercase font-bold mb-2">Total Business Balance</p>
+                    <h2 id="qBal" class="text-4xl font-black text-white tracking-tight">₹0</h2>
+                    <p id="qTask" class="text-[10px] mt-2 bg-purple-500/20 text-purple-400 px-3 py-1 rounded-full uppercase font-bold">0 Goals Pending</p>
+                </div>
+
+                <div class="glass p-6 rounded-[2rem]">
+                    <h3 class="text-xs font-bold text-purple-400 mb-4 uppercase tracking-widest flex items-center"><i class="fas fa-bullseye mr-2"></i> Monthly Goal</h3>
+                    <div class="flex gap-2">
+                        <input type="text" id="tInp" placeholder="Enter task..." class="flex-1 bg-white/5 p-4 rounded-2xl outline-none text-sm border border-white/5 focus:border-purple-500/40">
+                        <button onclick="addTask()" class="btn-grad w-14 rounded-2xl flex items-center justify-center text-white"><i class="fas fa-plus"></i></button>
+                    </div>
+                </div>
+
+                <div class="glass p-6 rounded-[2rem]">
+                    <h3 class="text-xs font-bold text-blue-400 mb-4 uppercase tracking-widest flex items-center"><i class="fas fa-wallet mr-2"></i> Wallet Entry</h3>
+                    <input type="number" id="aInp" placeholder="₹ Amount" class="w-full bg-white/5 p-4 rounded-2xl mb-3 outline-none text-xl font-bold border border-white/5">
+                    <input type="text" id="dInp" placeholder="Reason..." class="w-full bg-white/5 p-4 rounded-2xl mb-4 outline-none text-sm border border-white/5">
+                    <div class="flex gap-3">
+                        <button onclick="addCash('earning')" class="flex-1 bg-green-500/10 text-green-400 p-4 rounded-2xl font-bold border border-green-500/20 hover:bg-green-500 hover:text-white transition-all">Income</button>
+                        <button onclick="addCash('spending')" class="flex-1 bg-red-500/10 text-red-400 p-4 rounded-2xl font-bold border border-red-500/20 hover:bg-red-500 hover:text-white transition-all">Expense</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="historyPage" class="hidden full-width grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div class="md:col-span-2 glass p-8 rounded-[3rem] text-center">
+                    <p id="sMsg" class="text-xs font-bold text-gray-500 uppercase tracking-widest mb-2"></p>
+                    <p id="sAmt" class="text-5xl font-black"></p>
+                </div>
+                
+                <div>
+                    <h3 class="text-xs font-bold text-purple-400 mb-4 ml-2 uppercase tracking-widest">Active Business Goals</h3>
+                    <div id="taskList" class="space-y-3"></div>
+                </div>
+
+                <div>
+                    <h3 class="text-xs font-bold text-blue-400 mb-4 ml-2 uppercase tracking-widest">Transaction Records</h3>
+                    <div id="transList" class="space-y-3"></div>
+                </div>
+            </div>
+        </main>
+
+        <nav class="bottom-nav h-24 shrink-0 flex justify-around items-center px-10">
+            <button onclick="showPage('add')" id="nAdd" class="nav-item active flex flex-col items-center">
+                <i class="fas fa-plus-square text-2xl"></i>
+                <span class="text-[10px] mt-2 font-bold uppercase tracking-widest">Controls</span>
+            </button>
+            <button onclick="showPage('history')" id="nHis" class="nav-item flex flex-col items-center text-gray-500">
+                <i class="fas fa-layer-group text-2xl"></i>
+                <span class="text-[10px] mt-2 font-bold uppercase tracking-widest">History</span>
+            </button>
+        </nav>
+    </div>
+
+    <script>
+        let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+        let trans = JSON.parse(localStorage.getItem('trans')) || [];
+
+        function showPage(p) {
+            document.getElementById('addPage').classList.toggle('hidden', p !== 'add');
+            document.getElementById('historyPage').classList.toggle('hidden', p !== 'history');
+            document.getElementById('nAdd').className = p==='add' ? 'nav-item active flex flex-col items-center' : 'nav-item flex flex-col items-center text-gray-500';
+            document.getElementById('nHis').className = p==='history' ? 'nav-item active flex flex-col items-center' : 'nav-item flex flex-col items-center text-gray-500';
+            render();
+        }
+
+        function addTask() {
+            const i = document.getElementById('tInp');
+            if(!i.value) return;
+            tasks.push({ text: i.value, done: false, id: Date.now() });
+            i.value = ''; render();
+        }
+
+        function addCash(type) {
+            const a = document.getElementById('aInp');
+            const d = document.getElementById('dInp');
+            if(!a.value || !d.value) return;
+            trans.push({ amt: Number(a.value), desc: d.value, type, id: Date.now(), date: new Date().toLocaleDateString('en-IN', {day:'2-digit', month:'short'}) });
+            a.value = ''; d.value = ''; render();
+        }
+
+        function render() {
+            localStorage.setItem('tasks', JSON.stringify(tasks));
+            localStorage.setItem('trans', JSON.stringify(trans));
+            const inc = trans.filter(t => t.type==='earning').reduce((s,c)=>s+c.amt, 0);
+            const exp = trans.filter(t => t.type==='spending').reduce((s,c)=>s+c.amt, 0);
+            const net = inc - exp;
+            const pends = tasks.filter(t => !t.done).length;
+
+            document.getElementById('qBal').innerText = '₹' + net.toLocaleString('en-IN');
+            document.getElementById('qTask').innerText = pends + " Goals Pending";
+            
+            const sMsg = document.getElementById('sMsg');
+            const sAmt = document.getElementById('sAmt');
+            sMsg.innerText = net >= 0 ? "Profit Statement" : "Loss Statement";
+            sAmt.innerText = (net >= 0 ? "₹" : "-₹") + Math.abs(net).toLocaleString('en-IN');
+            sAmt.className = `text-5xl font-black ${net >= 0 ? 'text-green-400' : 'text-red-400'}`;
+
+            document.getElementById('taskList').innerHTML = tasks.map(t => `
+                <div class="glass p-5 rounded-2xl flex justify-between items-center ${t.done ? 'opacity-30 border-green-500/20' : ''}">
+                    <div onclick="t.done=!t.done;render()" class="flex items-center gap-4 cursor-pointer">
+                        <i class="fas ${t.done ? 'fa-check-circle text-green-500' : 'fa-circle text-gray-700'} text-xl"></i>
+                        <span class="text-sm font-medium ${t.done ? 'line-through' : ''}">${t.text}</span>
+                    </div>
+                    <button onclick="tasks=tasks.filter(x=>x.id!=${t.id});render()" class="text-gray-700 hover:text-red-500 transition-colors"><i class="fas fa-trash-alt"></i></button>
+                </div>
+            `).join('') || '<p class="text-center text-gray-600 text-xs py-10">No active goals found.</p>';
+
+            document.getElementById('transList').innerHTML = trans.map(t => `
+                <div class="glass p-5 rounded-2xl flex justify-between items-center border-l-4 ${t.type==='earning'?'border-green-500':'border-red-500'}">
+                    <div><p class="text-sm font-bold text-gray-200">${t.desc}</p><p class="text-[10px] text-gray-600 mt-1 uppercase font-bold tracking-widest">${t.date}</p></div>
+                    <span class="font-black ${t.type==='earning'?'text-green-400':'text-red-400'}">${t.type==='earning'?'+':'-'}₹${t.amt}</span>
+                </div>
+            `).reverse().join('') || '<p class="text-center text-gray-600 text-xs py-10">No financial records found.</p>';
+        }
+
+        const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        document.getElementById('mLabel').innerText = months[new Date().getMonth()] + " 2026";
+        setInterval(() => {
+            document.getElementById('clock').innerText = new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+        }, 1000);
+        render();
+    </script>
+</body>
+</html>
